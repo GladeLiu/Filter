@@ -75,7 +75,3 @@ draw<-data.frame(t=c(1:100,1:100),data=c(as.vector(xhat),xTrue),
       type=c(rep("filter",100),rep("truth",100) ));
 library(ggplot2);
 qplot(t,data,data=draw,colour=type,geom="line",)+geom_line(size=1)
-
-#RMSE
-RMSE<-sqrt(sum((xhat-xTrue)^2)/t);
-
