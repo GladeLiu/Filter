@@ -17,7 +17,7 @@ for(i in 2:t){
 
 #Particle filter
 library(pracma);
-PF<-function(f,h,pdf_v,Q,P0,M,y,algorithm){
+ParticleFilter<-function(f,h,pdf_v,Q,P0,M,y,algorithm=1){
  Q<-as.matrix(Q);
  P0<-as.matrix(P0);
  M<-as.matrix(M);
@@ -25,7 +25,7 @@ PF<-function(f,h,pdf_v,Q,P0,M,y,algorithm){
  x<-sqrt(P0)%*%randn(n,M); #Initialize particles
  tf<-size(y,2);
  xhat<-rep(0,tf);
- if(algorithm=1){
+ if(algorithm==1){
    for(t in 1:tf){
       e<-repmat(y[t],1,M)-f_observe(x); #Calculate weights
       w<-pdf_v(e); #The likelihood function
@@ -46,6 +46,7 @@ PF<-function(f,h,pdf_v,Q,P0,M,y,algorithm){
      x<-x[,ind]; #The new particles
    }
  }
+ xhat;
 }
 
 #resampling
@@ -69,9 +70,12 @@ pdf_v<-function(x){
 }
 
 xTrue<-x;
-xhat<-PF(f_state,f_observe,pdf_v,Q=10,P0=5,M=1000,y);
+xhat<-PF(f_state,f_observe,pdf_v,Q=10,P0=5,M=1000,y,algorithm=2);
 draw<-data.frame(t=c(1:100,1:100),data=c(as.vector(xhat),xTrue),
       type=c(rep("filter",100),rep("truth",100) ));
 library(ggplot2);
 qplot(t,data,data=draw,colour=type,geom="line",)+geom_line(size=1)
+
+#RMSE
+RMSE<-sqrt(sum((xhat-xTrue)^2)/t);
 
